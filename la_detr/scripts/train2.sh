@@ -2,7 +2,6 @@ dset_name=hl
 ctx_mode=video_tef
 v_feat_types=slowfast_clip
 t_feat_type=clip 
-results_root=results
 exp_id=exp
 
 ######## data paths
@@ -37,9 +36,14 @@ fi
 #### training
 bsz=32
 
+results_root=results_twomix
+
+
 gpunum=1
 
-list="2023 2024"
+list="2025 2026"
+
+aug_seed=2
 
 for seed in $list
 do
@@ -48,7 +52,6 @@ do
 CUDA_VISIBLE_DEVICES=${gpunum} PYTHONPATH=$PYTHONPATH:. python la_detr/train.py \
 --dset_name ${dset_name} \
 --ctx_mode ${ctx_mode} \
---train_path ${train_path} \
 --eval_path ${eval_path} \
 --eval_split_name ${eval_split_name} \
 --v_feat_dirs ${v_feat_dirs[@]} \
@@ -57,9 +60,8 @@ CUDA_VISIBLE_DEVICES=${gpunum} PYTHONPATH=$PYTHONPATH:. python la_detr/train.py 
 --t_feat_dim ${t_feat_dim} \
 --bsz ${bsz} \
 --results_root ${results_root} \
---exp_id "twomix_adv_${seed}" \
---crop \
---seed ${seed}
-${@:1}
+--train_path data/hl_crop_twomix_10_seed_${aug_seed}.jsonl \
+--exp_id both_${aug_seed}__seed_${seed} \
+--seed ${seed} \
 
 done
